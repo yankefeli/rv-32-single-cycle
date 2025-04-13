@@ -1,18 +1,40 @@
-module tb ();
-  logic [riscv_pkg::XLEN-1:0] addr;
-  logic [riscv_pkg::XLEN-1:0] data;
-  logic [riscv_pkg::XLEN-1:0] pc;
-  logic [riscv_pkg::XLEN-1:0] instr;
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 13.04.2025 13:50:08
+// Design Name: 
+// Module Name: tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+module tb();
+
+  logic [31:0] addr;
+  logic [31:0] data;
+  logic [31:0] pc;
+  logic [31:0] instr;
   logic [                4:0] reg_addr;
-  logic [riscv_pkg::XLEN-1:0] reg_data;
-  logic [riscv_pkg::XLEN-1:0] mem_addr;
-  logic [riscv_pkg::XLEN-1:0] mem_data;
+  logic [31:0] reg_data;
+  logic [31:0] mem_addr;
+  logic [31:0] mem_data;
   logic                       mem_wrt;
   logic                       update;
   logic                       clk;
   logic                       rstn;
 
-  core_model i_core_model (
+  riscv_singlecycle i_core_model (
       .clk_i(clk),
       .rstn_i(rstn),
       .addr_i(addr),
@@ -27,6 +49,7 @@ module tb ();
       .mem_wrt_o(mem_wrt)
 
   );
+  
   integer file_pointer;
   initial begin
     file_pointer = $fopen("model.log", "w");
@@ -46,10 +69,11 @@ module tb ();
           $fwrite(file_pointer, "mem 0x%8h 0x%8h", mem_addr, mem_data);
         end
         $fwrite(file_pointer, "\n");
-        #2;
       end
+      #2;
     end
   end
+  
   initial
     forever begin
       clk = 0;
@@ -64,7 +88,9 @@ module tb ();
     #10000;
     for (logic [31:0] i = 32'h8000_0000; i < 32'h8000_0000 + 'h20; i = i + 4) begin
       addr = i;
+      #4;
       $display("data @ mem[0x%8h] = %8h", addr, data);
+      
     end
     $finish;
   end
@@ -74,5 +100,6 @@ module tb ();
     $dumpfile("dump.vcd");
     $dumpvars();
   end
+
 
 endmodule
